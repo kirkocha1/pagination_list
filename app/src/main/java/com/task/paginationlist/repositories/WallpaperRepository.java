@@ -7,6 +7,7 @@ import com.task.paginationlist.data.db.models.WallpaperDb;
 import com.task.paginationlist.data.network.NetworkNetworkSource;
 import com.task.paginationlist.data.network.netmodels.Wallpaper;
 import com.task.paginationlist.data.network.netmodels.WallpaperList;
+import com.task.paginationlist.data.utils.WallpaperMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,11 @@ public class WallpaperRepository {
     private static final String TAG = "wallpaperRepository";
     private WallpaperDataSource cache;
     private NetworkNetworkSource network;
+    private WallpaperMapper mapper;
 
-    public WallpaperRepository(WallpaperDataSource cache, NetworkNetworkSource network) {
+    public WallpaperRepository(WallpaperDataSource cache, NetworkNetworkSource network, WallpaperMapper mapper) {
         this.cache = cache;
+        this.mapper = mapper;
         this.network = network;
     }
 
@@ -51,7 +54,7 @@ public class WallpaperRepository {
         if (list != null) {
             int i = 0;
             for (Wallpaper wallpaper : list.wallpapers) {
-                WallpaperDb dModel = wallpaper.toWallpaperDb();
+                WallpaperDb dModel = mapper.map(wallpaper);
                 dModel.setPageNum(page);
                 dModel.setPagePosition(i);
                 resultSet.add(dModel);

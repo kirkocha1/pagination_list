@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.task.paginationlist.data.db.WallpaperDataSource;
 import com.task.paginationlist.data.network.NetworkNetworkSource;
+import com.task.paginationlist.data.utils.WallpaperMapper;
 import com.task.paginationlist.repositories.WallpaperRepository;
 
 import javax.inject.Singleton;
@@ -26,9 +27,17 @@ public class RepositoryModule {
         return context;
     }
 
+
     @Singleton
     @Provides
-    public WallpaperRepository provideWallpaperRepository(WallpaperDataSource cache, NetworkNetworkSource network) {
-        return new WallpaperRepository(cache, network);
+    public WallpaperMapper provideWallpaperMapper() {
+        return new WallpaperMapper();
+    }
+
+
+    @Singleton
+    @Provides
+    public WallpaperRepository provideWallpaperRepository(WallpaperDataSource cache, NetworkNetworkSource network, WallpaperMapper mapper) {
+        return new WallpaperRepository(cache, network, mapper);
     }
 }
