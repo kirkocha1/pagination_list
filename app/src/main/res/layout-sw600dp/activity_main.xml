@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.task.paginationlist.presentation.piclist.views.activities.MainActivity">
+
+
+    <fragment
+        class="com.task.paginationlist.presentation.piclist.views.fragments.PicGridListFragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:tag="@string/grid_fragment_tag" />
+
+    <FrameLayout
+        android:id="@+id/full_part_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:tag="@string/full_size_fragment_tag" />
+
+
+</LinearLayout>

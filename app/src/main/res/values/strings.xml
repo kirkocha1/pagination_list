@@ -1,0 +1,7 @@
+<resources>
+    <string name="device_type">phone</string>
+    <string name="app_name">PaginationList</string>
+    <string name="error_message">Error</string>
+    <string name="grid_fragment_tag">grid_fragment_tag</string>
+    <string name="full_size_fragment_tag">full_size_fragment_tag</string>
+</resources>

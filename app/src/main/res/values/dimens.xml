@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="reload_size">40dp</dimen>
+    <dimen name="text_size">20sp</dimen>
+    <dimen name="img_icon_size">200dp</dimen>
+</resources>
