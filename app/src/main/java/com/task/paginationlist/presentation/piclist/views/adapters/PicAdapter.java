@@ -20,15 +20,15 @@ import java.text.ParseException;
 import java.util.List;
 
 public class PicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IPaginatorAdapter {
+
     private static final String TAG = "PicAdapter";
     public static final int ITEM_TYPE = 1;
     public static final int FOOTER_TYPE = 0;
 
     private boolean isSuccessful = true;
-
     private View.OnClickListener reload;
     private OnPickClickListener onPicClick;
-
+    private boolean isFooterVisible;
 
     ILoader loader;
 
@@ -42,10 +42,12 @@ public class PicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
         if (isRefreshing) {
             this.wallpapers = null;
         }
-        if (this.wallpapers == null) {
-            this.wallpapers = models;
-        } else {
-            this.wallpapers.addAll(models);
+        if (models != null) {
+            if (this.wallpapers == null) {
+                this.wallpapers = models;
+            } else {
+                this.wallpapers.addAll(models);
+            }
         }
         isSuccessful = true;
         notifyDataSetChanged();
@@ -69,6 +71,7 @@ public class PicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
         if (isFooter(position)) {
             LoadingHolder loadingHolder = ((LoadingHolder) holder);
             loadingHolder.loaderView.setReloadClick(reload);
+            loadingHolder.loaderView.setVisibility(isFooterVisible ? View.VISIBLE : View.GONE);
             if (!isSuccessful) {
                 loadingHolder.loaderView.showError();
             } else {
@@ -101,6 +104,10 @@ public class PicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
     @Override
     public int getItemViewType(int position) {
         return isFooter(position) ? FOOTER_TYPE : ITEM_TYPE;
+    }
+
+    public void setFooterVisibility(boolean isAllLoaded) {
+        isFooterVisible = !isAllLoaded;
     }
 
     private boolean isFooter(int position) {

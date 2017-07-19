@@ -13,4 +13,6 @@ public interface IPaginatorAdapter {
     void setReload(View.OnClickListener listener);
 
     void setOnPicClick(OnPickClickListener onPicClick);
+
+    void setFooterVisibility(boolean isAllLoaded);
 }

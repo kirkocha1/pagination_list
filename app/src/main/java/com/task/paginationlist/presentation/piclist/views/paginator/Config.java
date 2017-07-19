@@ -23,7 +23,7 @@ public class Config {
         }
     };
 
-    public static final String formatDate(String date) throws ParseException{
+    public static String formatDate(String date) throws ParseException{
         return FORMAT_DATE_OUTPUT.get().format(FORMAT_DATE_INPUT.get().parse(date));
     }
 }

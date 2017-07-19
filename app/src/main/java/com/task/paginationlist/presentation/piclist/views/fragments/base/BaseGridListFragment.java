@@ -73,6 +73,7 @@ public abstract class BaseGridListFragment extends MvpAppCompatFragment {
         });
         refreshView.setOnRefreshListener(() -> {
             refreshView.setEnabled(false);
+            isAllLoaded = false;
             getDataLoader().loadMoreData(1);
         });
     }
@@ -100,12 +101,13 @@ public abstract class BaseGridListFragment extends MvpAppCompatFragment {
     public abstract ILoadMoreData getDataLoader();
 
     public void onLoadFinished(List<WallpaperDb> data) {
+        isAllLoaded = data == null || data.size() < Config.LIMIT;
         list.post(() -> {
+            adapter.setFooterVisibility(isAllLoaded);
             adapter.addData(data, refreshView.isRefreshing());
             refreshView.setRefreshing(false);
             refreshView.setEnabled(true);
             isLoading = false;
-            isAllLoaded = data != null && data.size() < Config.LIMIT;
             getDataLoader().handleOnPostEvent(adapter.getItemCount() - 1);
         });
     }
