@@ -59,11 +59,10 @@ public abstract class BaseGridListFragment extends MvpAppCompatFragment {
         list.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                boolean isScrollDown = dy > 0;
                 int visibleItemCount = manager.getChildCount();
                 int firstVisibleItemPosition = manager.findFirstVisibleItemPosition();
                 int totalItemCount = manager.getItemCount();
-                if (!isAllLoaded && !isLoading && isScrollDown) {
+                if (!isAllLoaded && !isLoading && adapter.getItemCount() != 1) {
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {//list.getAdapter().getItemCount()) {
                         isLoading = true;
                         getDataLoader().loadMoreData(list.getAdapter().getItemCount() / Config.LIMIT + 1);

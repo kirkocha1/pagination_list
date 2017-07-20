@@ -59,7 +59,7 @@ public class PicListPresenter extends BasePresenter<IPicListView> implements ILo
         Observable<List<WallpaperDb>> obs = page == 1 ? interactor.refreshList() : interactor.loadMore(page);
         addToCompositeSubscription(obs
                 .compose(transformer)
-                .subscribe(response -> getViewState().invalidateList(null), this::handleError)
+                .subscribe(response -> getViewState().invalidateList(response), this::handleError)
         );
     }
 
