@@ -38,7 +38,7 @@ public abstract class BaseGridListFragment extends MvpAppCompatFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         adapter = new PicAdapter();
-        adapter.setReload(v -> getDataLoader().loadMoreData(0));
+        adapter.setReload(v -> getDataLoader().loadMoreData(adapter.getItemCount() / Config.LIMIT + 1));
 
         list.setAdapter(adapter);
         manager = new GridLayoutManager(getContext(), Config.GRID_ROWS_COUNT);

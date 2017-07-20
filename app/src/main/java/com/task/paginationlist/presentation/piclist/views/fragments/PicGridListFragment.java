@@ -91,9 +91,11 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     public void showError(String error) {
         if (getAdapter() != null) {
             getAdapter().setSuccessful(false);
+            getAdapter().setFooterVisibility(false);
         }
         refreshView.setRefreshing(false);
         refreshView.setEnabled(true);
+
         handler.handlerErrorMessage(getContext(), error);
     }
 
