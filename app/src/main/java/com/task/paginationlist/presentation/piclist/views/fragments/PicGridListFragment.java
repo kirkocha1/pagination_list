@@ -1,6 +1,5 @@
 package com.task.paginationlist.presentation.piclist.views.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,7 +16,6 @@ import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
 import com.task.paginationlist.presentation.piclist.interfaces.ILoadMoreData;
 import com.task.paginationlist.presentation.piclist.presenter.PicListPresenter;
 import com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity;
-import com.task.paginationlist.presentation.piclist.views.activities.interfaces.IFullSizeViewCreator;
 import com.task.paginationlist.presentation.piclist.views.activities.interfaces.IPicListView;
 import com.task.paginationlist.presentation.piclist.views.fragments.base.BaseGridListFragment;
 import com.task.paginationlist.presentation.piclist.views.utils.ErrorHandler;
@@ -38,8 +36,6 @@ import static com.task.paginationlist.presentation.piclist.views.activities.Full
 public class PicGridListFragment extends BaseGridListFragment implements IPicListView {
 
     public static final String RESTORE_LAST_VISIBLE_ITEM_POS = "restore_last_visible_item_pos";
-    public static final String RESTORE_INIT = "restore_init";
-
 
     @InjectPresenter
     PicListPresenter presenter;
@@ -57,10 +53,6 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
 
     @Inject
     ErrorHandler handler;
-
-    IFullSizeViewCreator creator;
-
-    boolean isInit = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,10 +86,6 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
 
     @Override
     public void invalidateList(List<WallpaperDb> wallpapers) {
-        if (UtilsHelper.isTablet(getContext()) && isInit) {
-            creator.createFullSizePicFragment();
-            isInit = false;
-        }
         onLoadFinished(wallpapers);
     }
 
@@ -129,7 +117,6 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(RESTORE_INIT, isInit);
         outState.putInt(RESTORE_LAST_VISIBLE_ITEM_POS, getLastListItemPosition());
     }
 
@@ -137,23 +124,8 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            isInit = savedInstanceState.getBoolean(RESTORE_INIT);
             presenter.restoreListState(savedInstanceState.getInt(RESTORE_LAST_VISIBLE_ITEM_POS));
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof IFullSizeViewCreator) {
-            creator = (IFullSizeViewCreator) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        creator = null;
     }
 
     @Override
