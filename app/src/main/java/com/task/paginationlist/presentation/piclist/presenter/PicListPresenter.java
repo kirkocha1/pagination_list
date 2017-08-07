@@ -6,7 +6,6 @@ import com.arellomobile.mvp.InjectViewState;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.task.paginationlist.data.db.models.WallpaperDb;
 import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
-import com.task.paginationlist.presentation.piclist.interfaces.ILoadMoreData;
 import com.task.paginationlist.presentation.piclist.views.activities.interfaces.IPicListView;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 
 @InjectViewState
-public class PicListPresenter extends BasePresenter<IPicListView> implements ILoadMoreData {
+public class PicListPresenter extends BasePresenter<IPicListView> {
 
     public static final String TAG = "PicListPresenter";
 
@@ -48,7 +47,6 @@ public class PicListPresenter extends BasePresenter<IPicListView> implements ILo
 
     }
 
-    @Override
     public void loadMoreData(int page) {
         Log.e(TAG, "LOAD MORE DATA");
         Observable<List<WallpaperDb>> obs = page == 1 ? interactor.refreshList() : interactor.loadMore(page);
@@ -64,7 +62,6 @@ public class PicListPresenter extends BasePresenter<IPicListView> implements ILo
         }, this::handleError);
     }
 
-    @Override
     public void handleOnPostEvent(int count) {
         getViewState().updateFullSizeCount(count);
     }

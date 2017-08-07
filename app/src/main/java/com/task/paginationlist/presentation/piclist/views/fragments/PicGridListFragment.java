@@ -3,21 +3,24 @@ package com.task.paginationlist.presentation.piclist.views.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.task.paginationlist.PaginationListApplication;
 import com.task.paginationlist.R;
 import com.task.paginationlist.data.db.models.WallpaperDb;
 import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
-import com.task.paginationlist.presentation.piclist.interfaces.ILoadMoreData;
 import com.task.paginationlist.presentation.piclist.presenter.PicListPresenter;
 import com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity;
 import com.task.paginationlist.presentation.piclist.views.activities.interfaces.IPicListView;
-import com.task.paginationlist.presentation.piclist.views.fragments.base.BaseGridListFragment;
+import com.task.paginationlist.presentation.piclist.views.adapters.PicAdapter;
+import com.task.paginationlist.presentation.piclist.views.paginator.Config;
+import com.task.paginationlist.presentation.piclist.views.paginator.PaginatorList;
 import com.task.paginationlist.presentation.piclist.views.utils.ErrorHandler;
 import com.task.paginationlist.presentation.piclist.views.utils.UtilsHelper;
 
@@ -25,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.ObservableTransformer;
 
@@ -33,7 +37,7 @@ import static com.task.paginationlist.presentation.piclist.views.activities.Full
 import static com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity.POSITON_PIC;
 
 
-public class PicGridListFragment extends BaseGridListFragment implements IPicListView {
+public class PicGridListFragment extends MvpAppCompatFragment implements IPicListView {
 
     public static final String RESTORE_LAST_VISIBLE_ITEM_POS = "restore_last_visible_item_pos";
 
@@ -54,6 +58,11 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     @Inject
     ErrorHandler handler;
 
+    @BindView(R.id.paginator_list)
+    PaginatorList paginatorList;
+
+    private PicAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         PaginationListApplication.getComponent().inject(this);
@@ -63,7 +72,7 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.picture_list_frafment, null);
+        View view = inflater.inflate(R.layout.picture_list_fragment, null);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -71,7 +80,28 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setPicClickListener((v, pos, id, count) -> {
+        adapter = new PicAdapter();
+        adapter.setReload(v -> presenter.loadMoreData(adapter.getItemCount() / Config.LIMIT + 1));
+        paginatorList.setAdapter(adapter);
+        paginatorList.setLoadMoreListener(page -> {
+            presenter.loadMoreData(page);
+        });
+        GridLayoutManager manager = new GridLayoutManager(getContext(), Config.GRID_ROWS_COUNT);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch (adapter.getItemViewType(position)) {
+                    case PicAdapter.ITEM_TYPE:
+                        return 1;
+                    case PicAdapter.FOOTER_TYPE:
+                        return Config.GRID_ROWS_COUNT;
+                    default:
+                        return -1;
+                }
+            }
+        });
+        paginatorList.setManager(manager);
+        adapter.setOnPicClick((v, pos, id, count) -> {
             if (!UtilsHelper.isTablet(getContext())) {
                 Intent intent = new Intent(getContext(), FullSizeContainerActivity.class);
                 intent.putExtra(POSITON_PIC, pos);
@@ -86,23 +116,21 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
 
     @Override
     public void invalidateList(List<WallpaperDb> wallpapers) {
-        onLoadFinished(wallpapers);
-    }
-
-    @Override
-    public ILoadMoreData getDataLoader() {
-        return presenter;
+        boolean isAllLoaded = wallpapers == null || wallpapers.size() < Config.LIMIT;
+        paginatorList.setAllLoaded(isAllLoaded);
+        paginatorList.post(() -> {
+            adapter.setFooterVisibility(isAllLoaded);
+            adapter.addData(wallpapers, paginatorList.isRefreshing());
+            paginatorList.onCompleteLoad();
+            presenter.handleOnPostEvent(adapter.getItemCount() - 1);
+        });
     }
 
     @Override
     public void showError(String error) {
-        if (getAdapter() != null) {
-            getAdapter().setSuccessful(false);
-            getAdapter().setFooterVisibility(false);
-        }
-        refreshView.setRefreshing(false);
-        refreshView.setEnabled(true);
-
+        adapter.setSuccessful(false);
+        adapter.setFooterVisibility(false);
+        paginatorList.onErrorLoad();
         handler.handlerErrorMessage(getContext(), error);
     }
 
@@ -117,7 +145,7 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(RESTORE_LAST_VISIBLE_ITEM_POS, getLastListItemPosition());
+        outState.putInt(RESTORE_LAST_VISIBLE_ITEM_POS, paginatorList.getLastListItemPosition());
     }
 
     @Override
@@ -130,8 +158,8 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
 
     @Override
     public void restoreListView(List<WallpaperDb> restoredData, int lastItemPosition) {
-        setLastVisiblePosition(lastItemPosition);
-        onLoadFinished(restoredData);
+        paginatorList.setLastVisiblePosition(lastItemPosition);
+        invalidateList(restoredData);
     }
 
     @Override
