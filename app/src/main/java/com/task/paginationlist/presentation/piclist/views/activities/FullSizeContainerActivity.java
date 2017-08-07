@@ -19,15 +19,17 @@ public class FullSizeContainerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_size_container);
-        initUi();
+        initUi(savedInstanceState != null);
     }
 
-    private void initUi() {
+    private void initUi(boolean isRestored) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        Fragment fragment = FullSizePicFragment.createFullSizePicFragment(getIntent().getIntExtra(POSITON_PIC, 0),
-                getIntent().getIntExtra(PIC_ID, 0), getIntent().getIntExtra(PIC_COUNT, 0));
-        getSupportFragmentManager().beginTransaction().replace(R.id.full_size_container, fragment).commit();
+        if (!isRestored) {
+            Fragment fragment = FullSizePicFragment.createFullSizePicFragment(getIntent().getIntExtra(POSITON_PIC, 0),
+                    getIntent().getIntExtra(PIC_ID, 0), getIntent().getIntExtra(PIC_COUNT, 0));
+            getSupportFragmentManager().beginTransaction().replace(R.id.full_size_container, fragment).commit();
+        }
     }
 }
