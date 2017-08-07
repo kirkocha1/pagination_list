@@ -5,11 +5,9 @@
     android:layout_height="match_parent"
     tools:context="com.task.paginationlist.presentation.piclist.views.activities.MainActivity">
 
-
-    <fragment
-        class="com.task.paginationlist.presentation.piclist.views.fragments.PicGridListFragment"
+    <FrameLayout
+        android:id="@+id/list_pic_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="@string/grid_fragment_tag" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
