@@ -4,15 +4,12 @@ import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
-import com.task.paginationlist.PaginationListApplication;
 import com.task.paginationlist.data.db.models.WallpaperDb;
 import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
 import com.task.paginationlist.presentation.piclist.interfaces.ILoadMoreData;
 import com.task.paginationlist.presentation.piclist.views.activities.interfaces.IPicListView;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
@@ -22,15 +19,13 @@ public class PicListPresenter extends BasePresenter<IPicListView> implements ILo
 
     public static final String TAG = "PicListPresenter";
 
-    @Inject
     ObservableTransformer<List<WallpaperDb>, List<WallpaperDb>> transformer;
 
-    @Inject
     WallpaperListInteractor interactor;
 
-    public PicListPresenter() {
-        PaginationListApplication.getComponent().inject(this);
-
+    public PicListPresenter(WallpaperListInteractor interactor, ObservableTransformer<List<WallpaperDb>, List<WallpaperDb>> transformer) {
+        this.transformer = transformer;
+        this.interactor = interactor;
     }
 
     @Override

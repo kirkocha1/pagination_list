@@ -14,6 +14,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.task.paginationlist.PaginationListApplication;
 import com.task.paginationlist.R;
 import com.task.paginationlist.data.utils.ILoader;
+import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
 import com.task.paginationlist.presentation.piclist.presenter.PicturePresenter;
 import com.task.paginationlist.presentation.piclist.views.fragments.intefaces.IPictureView;
 
@@ -38,24 +39,32 @@ public class PictureFragment extends MvpAppCompatFragment implements IPictureVie
         return fragment;
     }
 
+    @BindView(R.id.full_picture)
+    ImageView imageView;
+
     @Inject
     ILoader loader;
 
-    @BindView(R.id.full_picture)
-    ImageView imageView;
+    @Inject
+    WallpaperListInteractor interactor;
 
     @InjectPresenter
     public PicturePresenter presenter;
 
     @ProvidePresenter
     public PicturePresenter providePresenter() {
-        return new PicturePresenter(getArguments().getInt(PAGE_NUM), getArguments().getInt(PAGE_POSITION));
+        return new PicturePresenter(interactor, getArguments().getInt(PAGE_NUM), getArguments().getInt(PAGE_POSITION));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        PaginationListApplication.getComponent().inject(this);
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        PaginationListApplication.getComponent().inject(this);
         View view = inflater.inflate(R.layout.fragment_picture, container, false);
         ButterKnife.bind(this, view);
         return view;

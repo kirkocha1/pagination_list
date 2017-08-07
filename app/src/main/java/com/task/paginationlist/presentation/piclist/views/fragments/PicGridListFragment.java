@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.task.paginationlist.PaginationListApplication;
 import com.task.paginationlist.R;
 import com.task.paginationlist.data.db.models.WallpaperDb;
+import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
 import com.task.paginationlist.presentation.piclist.interfaces.ILoadMoreData;
 import com.task.paginationlist.presentation.piclist.presenter.PicListPresenter;
 import com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity;
@@ -26,6 +28,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import io.reactivex.ObservableTransformer;
 
 import static com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity.PIC_COUNT;
 import static com.task.paginationlist.presentation.piclist.views.activities.FullSizeContainerActivity.PIC_ID;
@@ -42,16 +45,32 @@ public class PicGridListFragment extends BaseGridListFragment implements IPicLis
     PicListPresenter presenter;
 
     @Inject
+    WallpaperListInteractor interactor;
+
+    @Inject
+    ObservableTransformer<List<WallpaperDb>, List<WallpaperDb>> transformer;
+
+    @ProvidePresenter
+    PicListPresenter providePresenter() {
+        return new PicListPresenter(interactor, transformer);
+    }
+
+    @Inject
     ErrorHandler handler;
 
     IFullSizeViewCreator creator;
 
     boolean isInit = true;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        PaginationListApplication.getComponent().inject(this);
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        PaginationListApplication.getComponent().inject(this);
         View view = inflater.inflate(R.layout.picture_list_frafment, null);
         ButterKnife.bind(this, view);
         return view;

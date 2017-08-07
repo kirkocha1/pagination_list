@@ -3,11 +3,8 @@ package com.task.paginationlist.presentation.piclist.presenter;
 import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.task.paginationlist.PaginationListApplication;
 import com.task.paginationlist.domain.interactors.WallpaperListInteractor;
 import com.task.paginationlist.presentation.piclist.views.fragments.intefaces.IPictureView;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -17,14 +14,13 @@ import io.reactivex.schedulers.Schedulers;
 public class PicturePresenter extends BasePresenter<IPictureView> {
     public static final String TAG = "PicturePresenter";
 
-    @Inject
     WallpaperListInteractor interactor;
 
     private int page;
     private int position;
 
-    public PicturePresenter(int page, int position) {
-        PaginationListApplication.getComponent().inject(this);
+    public PicturePresenter(WallpaperListInteractor interactor, int page, int position) {
+        this.interactor = interactor;
         this.page = page;
         this.position = position;
     }

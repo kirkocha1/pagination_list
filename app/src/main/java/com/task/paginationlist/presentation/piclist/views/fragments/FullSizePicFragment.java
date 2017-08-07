@@ -25,6 +25,7 @@ public class FullSizePicFragment extends MvpAppCompatFragment {
 
     @BindView(R.id.view_pager)
     ViewPager pager;
+
     PicFragmentPagerAdapter adapter;
 
     public static FullSizePicFragment createFullSizePicFragment(int pos, int id, int count) {
