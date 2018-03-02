@@ -1,52 +1,50 @@
-package com.task.paginationlist.di.modules;
+package com.task.paginationlist.di.modules
 
-import android.content.Context;
+import android.content.Context
 
-import com.jakewharton.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
-import com.task.paginationlist.data.db.models.WallpaperDb;
-import com.task.paginationlist.data.utils.ILoader;
-import com.task.paginationlist.data.utils.ImageLoader;
-import com.task.paginationlist.presentation.piclist.views.utils.ErrorHandler;
+import com.jakewharton.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
+import com.task.paginationlist.data.db.models.WallpaperDb
+import com.task.paginationlist.data.utils.ILoader
+import com.task.paginationlist.data.utils.ImageLoader
+import com.task.paginationlist.presentation.piclist.views.utils.ErrorHandler
 
-import java.util.List;
+import javax.inject.Singleton
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import io.reactivex.ObservableTransformer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
+import dagger.Module
+import dagger.Provides
+import io.reactivex.ObservableTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import okhttp3.OkHttpClient
 
 
 @Module
-public class UtilsModule {
+class UtilsModule {
 
     @Singleton
     @Provides
-    public Picasso providePicasso(Context context) {
-        return new Picasso.Builder(context).downloader(new OkHttp3Downloader(new OkHttpClient())).build();
+    fun providePicasso(context: Context): Picasso {
+        return Picasso.Builder(context).downloader(OkHttp3Downloader(OkHttpClient())).build()
     }
 
     @Singleton
     @Provides
-    public ObservableTransformer<List<WallpaperDb>, List<WallpaperDb>> provideTransformer() {
-        return observable -> observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    fun provideTransformer(): ObservableTransformer<List<WallpaperDb>, List<WallpaperDb>> {
+        return { observable -> observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()) }
     }
 
 
     @Singleton
     @Provides
-    public ILoader provideImageLoader(Picasso picasso) {
-        return new ImageLoader(picasso);
+    fun provideImageLoader(picasso: Picasso): ILoader {
+        return ImageLoader(picasso)
     }
 
     @Singleton
     @Provides
-    public ErrorHandler provideErrorHandler() {
-        return new ErrorHandler();
+    fun provideErrorHandler(): ErrorHandler {
+        return ErrorHandler()
     }
 
 
