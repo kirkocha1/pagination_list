@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/error_container"
+        android:id="@+id/errorContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
@@ -15,25 +15,24 @@
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/error_message"
+            android:id="@+id/errorMessage"
             style="@style/TitleTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/error_message" />
 
         <ImageView
-            android:id="@+id/reload_btn"
+            android:id="@+id/reloadBtn"
             android:layout_width="@dimen/reload_size"
             android:layout_height="@dimen/reload_size"
             android:layout_margin="10dp"
-            android:src="@drawable/reload"
             android:text="@string/error_message" />
 
 
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
