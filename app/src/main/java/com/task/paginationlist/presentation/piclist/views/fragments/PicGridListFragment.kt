@@ -63,13 +63,15 @@ class PicGridListFragment : MvpAppCompatFragment(), IPicListView {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = PicAdapter()
-        adapter!!.setReload(View.OnClickListener { v -> presenter!!.loadMoreData(adapter!!.itemCount / Config.LIMIT + 1) })
-        paginatorList!!.setAdapter(adapter!!)
-        paginatorList!!.setLoadMoreListener(object : PaginatorList.OnLoadMoreListener {
-            override fun loadMoreData(page: Int) {
-                presenter!!.loadMoreData(page)
-            }
-        })
+        adapter?.setReload(View.OnClickListener { v -> presenter.loadMoreData(adapter!!.itemCount / Config.LIMIT + 1) })
+        adapter?.let { paginatorList.setAdapter(it) }
+        paginatorList.setLoadMoreListener(
+                object : PaginatorList.OnLoadMoreListener {
+                    override fun loadMoreData(page: Int) {
+                        presenter.loadMoreData(page)
+                    }
+                }
+        )
         val manager = GridLayoutManager(context, Config.GRID_ROWS_COUNT)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -80,8 +82,8 @@ class PicGridListFragment : MvpAppCompatFragment(), IPicListView {
                 }
             }
         }
-        paginatorList!!.setManager(manager)
-        adapter!!.setOnPicClick(object : OnPickClickListener {
+        paginatorList.setManager(manager)
+        adapter?.setOnPicClick(object : OnPickClickListener {
             override fun onPickClick(v: View, position: Int, id: Int, size: Int) {
                 if (!UtilsHelper.isTablet(context)) {
                     val intent = Intent(context, FullSizeContainerActivity::class.java)
@@ -98,54 +100,55 @@ class PicGridListFragment : MvpAppCompatFragment(), IPicListView {
 
     override fun invalidateList(wallpapers: MutableList<WallpaperDb>?) {
         val isAllLoaded = wallpapers == null || wallpapers.size < Config.LIMIT
-        paginatorList!!.setAllLoaded(isAllLoaded)
-        paginatorList!!.post {
-            adapter!!.setFooterVisibility(isAllLoaded)
-            adapter!!.addData(wallpapers!!, paginatorList!!.isRefreshing)
-            paginatorList!!.onCompleteLoad()
-            presenter!!.handleOnPostEvent(adapter!!.itemCount - 1)
+        paginatorList.setAllLoaded(isAllLoaded)
+        paginatorList.post {
+            adapter?.setFooterVisibility(isAllLoaded)
+            adapter?.addData(wallpapers, paginatorList.isRefreshing())
+            paginatorList.onCompleteLoad()
+            adapter?.let {
+                presenter.handleOnPostEvent(it.itemCount - 1)
+            }
         }
     }
 
     override fun restoreListView(restoredData: MutableList<WallpaperDb>, pos: Int) {
-        paginatorList!!.setLastVisiblePosition(pos)
+        paginatorList.setLastVisiblePosition(pos)
         invalidateList(restoredData)
     }
 
 
     override fun showError(error: String) {
-        adapter!!.setSuccessful(false)
-        adapter!!.setFooterVisibility(false)
-        paginatorList!!.onErrorLoad()
-        handler!!.handlerErrorMessage(context, error)
+        adapter?.setSuccessful(false)
+        adapter?.setFooterVisibility(false)
+        paginatorList.onErrorLoad()
+        handler.handlerErrorMessage(context, error)
     }
 
     override fun setFullSizePic(pos: Int) {
         val fragment = fragmentManager.findFragmentByTag(getString(R.string.full_size_fragment_tag)) as FullSizePicFragment
-        fragment?.setCurrentPic(pos)
+        fragment.setCurrentPic(pos)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState!!.putInt(RESTORE_LAST_VISIBLE_ITEM_POS, paginatorList!!.lastListItemPosition)
+        outState?.putInt(RESTORE_LAST_VISIBLE_ITEM_POS, paginatorList.lastListItemPosition())
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
-            presenter!!.restoreListState(savedInstanceState.getInt(RESTORE_LAST_VISIBLE_ITEM_POS))
+            presenter.restoreListState(savedInstanceState.getInt(RESTORE_LAST_VISIBLE_ITEM_POS))
         }
     }
 
     override fun updateFullSizeCount(count: Int) {
         if (UtilsHelper.isTablet(context)) {
             val fragment = fragmentManager.findFragmentByTag(getString(R.string.full_size_fragment_tag)) as FullSizePicFragment
-            fragment?.updateCount(count)
+            fragment.updateCount(count)
         }
     }
 
     companion object {
-
         val RESTORE_LAST_VISIBLE_ITEM_POS = "restore_last_visible_item_pos"
     }
 }

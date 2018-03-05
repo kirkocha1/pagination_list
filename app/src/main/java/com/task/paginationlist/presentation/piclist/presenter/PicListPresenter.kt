@@ -41,7 +41,10 @@ class PicListPresenter(
         val obs = if (page == 1) interactor.refreshList() else interactor.loadMore(page)
         addToCompositeSubscription(obs
                 .compose(transformer)
-                .subscribe({ response -> viewState.invalidateList(response) }, { this.handleError(it) })
+                .subscribe(
+                        { response -> viewState.invalidateList(response) },
+                        { this.handleError(it) }
+                )
         )
     }
 

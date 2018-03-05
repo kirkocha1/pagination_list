@@ -34,7 +34,7 @@ class PaginatorList(context: Context, attrs: AttributeSet?) : FrameLayout(contex
                         if (visibleItemCount + firstVisibleItemPosition >= totalItemCount) {//list.getAdapter().getItemCount()) {
                             isLoading = true
                             if (listener != null) {
-                                listener!!.loadMoreData(picList.adapter.itemCount / Config.LIMIT + 1)
+                                listener?.loadMoreData(picList.adapter.itemCount / Config.LIMIT + 1)
                             }
                         }
                     }
@@ -50,9 +50,9 @@ class PaginatorList(context: Context, attrs: AttributeSet?) : FrameLayout(contex
         }
     }
 
-    val isRefreshing = swipeRefresh.isRefreshing
+    fun isRefreshing() = swipeRefresh.isRefreshing
 
-    val lastListItemPosition = if (manager != null) manager!!.findLastVisibleItemPosition() else 0
+    fun lastListItemPosition() = if (manager != null) manager!!.findLastVisibleItemPosition() else 0
 
     fun setManager(manager: LinearLayoutManager) {
         this.manager = manager

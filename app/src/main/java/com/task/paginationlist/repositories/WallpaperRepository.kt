@@ -26,18 +26,18 @@ class WallpaperRepository(
                 )
     }
 
-    fun clear() = Observable.just(RepoResult(true))
+
+    fun clear() = Observable.fromCallable {
+        cache.deleteItems()
+        Log.e(TAG, "cache size is ${cache.items.size}")
+        return@fromCallable RepoResult(true)
+    }
 
     fun getListByPage(page: Int): Observable<MutableList<WallpaperDb>> {
         return Observable.fromCallable { cache.getItems(page) }
                 .filter { list -> list != null && !list.isEmpty() }
-                .switchIfEmpty(
-                        network
-                                .getWallpaperList(page)
-                                .map { list -> mapWallpaper(list, page) }
-                )
+                .switchIfEmpty(network.getWallpaperList(page).map { list -> mapWallpaper(list, page) })
     }
-
 
     private fun mapWallpaper(list: WallpaperList?, page: Int): MutableList<WallpaperDb> {
         val resultSet = ArrayList<WallpaperDb>()
@@ -61,6 +61,7 @@ class WallpaperRepository(
     }
 
     companion object {
+
         private val TAG = "wallpaperRepository"
     }
 }
