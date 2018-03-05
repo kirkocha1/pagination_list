@@ -10,14 +10,20 @@ import io.reactivex.ObservableTransformer
 
 @InjectViewState
 class PicListPresenter(
-        var interactor: WallpaperListInteractor,
-        var transformer: ObservableTransformer<MutableList<WallpaperDb>, MutableList<WallpaperDb>>
+        private val interactor: WallpaperListInteractor,
+        private val transformer: ObservableTransformer<MutableList<WallpaperDb>, MutableList<WallpaperDb>>
 ) : BasePresenter<IPicListView>() {
 
     override fun onFirstViewAttach() {
-        addToCompositeSubscription(interactor.firstWallpapers
-                .compose(transformer)
-                .subscribe({ response -> viewState.invalidateList(response) }, { this.handleError(it) }))
+        addToCompositeSubscription(
+                interactor
+                        .firstWallpapers()
+                        .compose(transformer)
+                        .subscribe(
+                                { response -> viewState.invalidateList(response) },
+                                { this.handleError(it) }
+                        )
+        )
     }
 
     private fun handleError(throwable: Throwable) {
@@ -40,7 +46,13 @@ class PicListPresenter(
     }
 
     fun restoreListState(pos: Int) {
-        interactor.cachedWallpapers.compose(transformer).subscribe({ list -> viewState.restoreListView(list, pos) }, { this.handleError(it) })
+        interactor
+                .cachedWallpapers()
+                .compose(transformer)
+                .subscribe(
+                        { list -> viewState.restoreListView(list, pos) },
+                        { this.handleError(it) }
+                )
     }
 
     fun handleOnPostEvent(count: Int) {

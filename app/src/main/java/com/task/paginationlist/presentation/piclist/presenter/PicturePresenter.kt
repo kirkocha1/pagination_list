@@ -12,9 +12,9 @@ import io.reactivex.schedulers.Schedulers
 
 @InjectViewState
 class PicturePresenter(
-        var interactor: WallpaperListInteractor,
-        val page: Int,
-        val position: Int
+        private var interactor: WallpaperListInteractor,
+        private val page: Int,
+        private val position: Int
 ) : BasePresenter<IPictureView>() {
 
     override fun attachView(view: IPictureView) {

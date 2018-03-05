@@ -11,27 +11,31 @@ import java.util.*
 
 
 class WallpaperRepository(
-        val cache: WallpaperDataSource,
-        val network: NetworkNetworkSource,
-        val mapper: WallpaperMapper
+        private val cache: WallpaperDataSource,
+        private val network: NetworkNetworkSource,
+        private val mapper: WallpaperMapper
 ) {
 
-    val restoredList: Observable<MutableList<WallpaperDb>>
-        get() = Observable.fromCallable { cache.items }
+    fun restoredList(): Observable<MutableList<WallpaperDb>> {
+        return Observable.fromCallable { cache.items }
                 .filter { list -> list != null && !list.isEmpty() }
-                .switchIfEmpty(network.getWallpaperList(1).map { list -> mapWallpaper(list, 1) })
-
-    fun clear(): Observable<RepoResult> {
-        return Observable.create { sub ->
-            cache.deleteItems()
-            sub.onNext(RepoResult(true))
-        }
+                .switchIfEmpty(
+                        network
+                                .getWallpaperList(1)
+                                .map { list -> mapWallpaper(list, 1) }
+                )
     }
+
+    fun clear() = Observable.just(RepoResult(true))
 
     fun getListByPage(page: Int): Observable<MutableList<WallpaperDb>> {
         return Observable.fromCallable { cache.getItems(page) }
                 .filter { list -> list != null && !list.isEmpty() }
-                .switchIfEmpty(network.getWallpaperList(page).map { list -> mapWallpaper(list, page) })
+                .switchIfEmpty(
+                        network
+                                .getWallpaperList(page)
+                                .map { list -> mapWallpaper(list, page) }
+                )
     }
 
 
@@ -57,7 +61,6 @@ class WallpaperRepository(
     }
 
     companion object {
-
         private val TAG = "wallpaperRepository"
     }
 }
