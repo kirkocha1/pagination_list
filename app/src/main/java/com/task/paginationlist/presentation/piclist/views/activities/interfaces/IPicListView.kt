@@ -18,5 +18,4 @@ interface IPicListView : MvpView {
 
     fun restoreListView(restoredData: MutableList<WallpaperDb>, pos: Int)
 
-
 }

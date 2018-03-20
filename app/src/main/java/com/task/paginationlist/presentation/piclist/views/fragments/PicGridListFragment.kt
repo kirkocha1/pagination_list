@@ -75,7 +75,7 @@ class PicGridListFragment : MvpAppCompatFragment(), IPicListView {
         val manager = GridLayoutManager(context, Config.GRID_ROWS_COUNT)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                when (adapter!!.getItemViewType(position)) {
+                when (adapter?.getItemViewType(position)) {
                     PicAdapter.ITEM_TYPE -> return 1
                     PicAdapter.FOOTER_TYPE -> return Config.GRID_ROWS_COUNT
                     else -> return -1
